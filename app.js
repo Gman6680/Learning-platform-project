@@ -5,7 +5,7 @@ const express = require("express"),
   LocalStrategy = require("passport-local"),
   passportLocalMongoose = require("passport-local-mongoose");
 const User = require("./model/user");
-const quizResultSchema = require("./model/QuizResult")
+const quizResultSchema = require("./model/QuizResult");
 let app = express();
 const path = require("path");
 
@@ -68,14 +68,12 @@ passport.deserializeUser(User.deserializeUser());
 app.get("/", (req, res) => {
   if (req.session.user) {
     // User is authenticated, render the dashboard
-    res.render("dashboard", {username: req.body.username}); // Use the appropriate EJS template
+    res.render("dashboard", { username: req.body.username }); // Use the appropriate EJS template
   } else {
     // User is not authenticated, render the regular index page
     res.render("login"); // Use the appropriate EJS template
   }
 });
-
-
 
 // Showing home page
 app.get("/register.html", function (req, res) {
@@ -130,7 +128,7 @@ app.post("/login", async function (req, res) {
           username: user.username,
           // Other relevant user properties
         };
-        res.render("dashboard", {username: req.body.username}); // Redirect to the dashboard
+        res.render("dashboard", { username: req.body.username }); // Redirect to the dashboard
       } else {
         res.status(400).json({ error: "Password doesn't match" });
       }
@@ -142,7 +140,6 @@ app.post("/login", async function (req, res) {
   }
 });
 
-
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
@@ -152,13 +149,12 @@ app.get("/logout", (req, res) => {
 app.get("/dashboard", (req, res) => {
   if (req.session.user) {
     // User is authenticated, render the dashboard
-    res.render("dashboard", {username: req.body.username}); // Use the appropriate EJS template
+    res.render("dashboard", { username: req.body.username }); // Use the appropriate EJS template
   } else {
     // User is not authenticated, redirect to login
     res.redirect("/login");
   }
 });
-
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
