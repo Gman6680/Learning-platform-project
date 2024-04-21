@@ -52,6 +52,55 @@ document.addEventListener("DOMContentLoaded", function () {
       card.classList.toggle("flipped");
     });
   });
+  document.addEventListener("DOMContentLoaded", function () {
+    // Function to toggle active class and expand/collapse content
+    function toggleContent(button) {
+      var content = button.nextElementSibling;
+      button.classList.toggle("active");
+      if (button.classList.contains("active")) {
+        content.style.maxHeight = content.scrollHeight + "px"; // Expand content fully
+      } else {
+        // Reset maxHeight after the transition ends
+        content.addEventListener(
+          "transitionend",
+          function () {
+            content.style.maxHeight = null; // Remove maxHeight property
+          },
+          { once: true }
+        );
+      }
+    }
+
+    // JavaScript to handle the toggle of lessonextend div
+    const lessonToggle = document.querySelector(".collapsible");
+    const lessonExtend = document.querySelector(".lessonextend");
+
+    lessonToggle.addEventListener("click", function () {
+      lessonExtend.classList.toggle("active");
+      if (!lessonExtend.classList.contains("active")) {
+        // Reset transform after the transition ends
+        lessonExtend.addEventListener(
+          "transitionend",
+          function () {
+            lessonExtend.style.transform = null;
+          },
+          { once: true }
+        );
+      } else {
+        lessonExtend.style.transform = "translateX(0)";
+      }
+    });
+
+    // Add event listeners for click to toggle collapsible divs
+    var coll = document.querySelectorAll(".collapsible");
+    coll.forEach(function (button) {
+      button.addEventListener("click", function () {
+        toggleContent(this);
+      });
+    });
+
+    // ... (rest of your code)
+  });
 
   // Function to type text onto the screen
   function typeText(outputElement, lessonNumber) {

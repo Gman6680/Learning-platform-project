@@ -32,13 +32,13 @@
     // finally combine our output list into one string of HTML and put it on the page
     quizContainer.innerHTML = output.join("");
   }
-
-  function showResults() {
+  function showResults(assessmentNumber) {
     // gather answer containers from our quiz
     const answerContainers = quizContainer.querySelectorAll(".answers");
 
     // keep track of user's answers
     let numCorrect = 0;
+    let numGreen = 0; // counter for green answers
 
     // for each question...
     currentQuiz.forEach((currentQuestion, questionNumber) => {
@@ -52,8 +52,9 @@
         // add to the number of correct answers
         numCorrect++;
 
-        // color the answers green
+        // color the answers green and increment green counter
         answerContainers[questionNumber].style.color = "lightgreen";
+        numGreen++;
       }
       // if answer is wrong or blank
       else {
@@ -64,11 +65,46 @@
 
     // show number of correct answers out of total
     resultsContainer.innerHTML = `${numCorrect} out of ${currentQuiz.length}`;
+
+    // if all answers are correct, output to the console
+    if (numCorrect === currentQuiz.length) {
+      const assessmentResult = `Passed assessment ${assessmentNumber}`;
+      console.log(assessmentResult);
+      const updateUserData = async (userId, assessmentResult) => {
+        const client = await MongoClient.connect(url, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        });
+        const db = client.db(dbName);
+
+        try {
+          await db
+            .collection("users")
+            .updateOne(
+              { _id: userId },
+              { $set: { assessmentResult: assessmentResult } }
+            );
+          console.log("User data updated successfully");
+        } catch (error) {
+          console.error("Error updating user data:", error);
+        } finally {
+          client.close();
+        }
+      };
+
+      module.exports = { updateUserData };
+    }
   }
 
   const quizContainer = document.getElementById("quiz");
   const resultsContainer = document.getElementById("results");
   const submitButton = document.getElementById("submit");
+
+  // Define your quiz data and assessment number
+  let assessmentNumber = 1; // set your assessment number
+
+  // Event listener for submit button
+  submitButton.addEventListener("click", () => showResults(assessmentNumber));
 
   // Define quiz data arrays for each assessment
   //general knowledge
@@ -1121,4 +1157,4 @@
 
   // Call loadQuiz when the page loads
   window.addEventListener("load", loadQuiz);
-})();
+});
